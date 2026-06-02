@@ -43,7 +43,7 @@ def atomize(text):
         if ch.isspace() or ch == '　':
             i += 1
             continue
-        if ch in PUNCT:
+        if ch in PUNCT or unicodedata.category(ch)[0] in ('P', 'S'):
             atoms.append({'o': ch, 't': 'punct'})
             i += 1
             continue

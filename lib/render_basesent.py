@@ -91,7 +91,9 @@ def _render_base_sent(sent, lo, diff_union):
             buf.append(a['o'])
         elif a['t'] == 'nl':
             continue
-        else:
+        else:  # punct 不参与下划线，遇到时先结束当前下划线块
+            if cur['d']:
+                flush(); cur['d'] = False
             buf.append(a['o'])
     flush()
     return ''.join(out)
@@ -111,6 +113,15 @@ def render_chapter(zhi, cg, gy):
         ntext = sum(1 for a in sent if a['t'] == 'text')
         lo, hi = t, t + ntext
         t = hi
+        if ntext == 0:
+            # 纯脂批/无正文行：脂批不参与比对，左右留空、不计缺句
+            base_html = _render_base_sent(sent, lo, {})
+            rows_html.append(
+                '<tr class="r-same"><td class="col-cg">&nbsp;</td>'
+                '<td class="col-mid">%s</td><td class="col-gy">&nbsp;</td></tr>'
+                % (base_html or '&nbsp;'))
+            n_same += 1
+            continue
         hi_q = hi if si < nsent-1 else len(bk)+1  # 末句把尾随 insert 也并入
         cj = _side_range_for(cg_anchor, lo, hi_q, len(ck))
         gj = _side_range_for(gy_anchor, lo, hi_q, len(gk))
