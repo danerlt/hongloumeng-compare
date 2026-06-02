@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-Hans"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>《红楼梦》三版本字符级对比 · 前八十回</title>
+<style>
+:root{--red-bg:#ffd6d6;--green-bg:#d3f3d6;--green-bd:#8c8;--yellow-bg:#fff2b8;--base-ul:#c33;--ink:#1d1d1f;--muted:#8a8a8e;--line:#e4e4e7;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Serif CJK SC","Source Han Serif SC","Songti SC",serif;color:var(--ink);background:#faf9f7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:250px;flex:0 0 250px;border-right:1px solid var(--line);background:#fff;position:sticky;top:0;height:100vh;overflow:auto}
+.sidebar h2{font-size:13px;margin:0;padding:14px 14px 6px;color:var(--muted);font-weight:600;letter-spacing:.05em}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar li{padding:8px 14px;border-bottom:1px solid #f4f4f4;cursor:pointer;font-size:12.5px;line-height:1.45}
+.sidebar li:hover{background:#f7f9ff}
+.sidebar li.active{background:#eef3ff;border-left:3px solid #3b5bdb}
+.sidebar .navnum{display:block;font-size:11px;color:var(--muted)}
+.main{flex:1;min-width:0;padding:0 0 60px}
+.head{padding:18px 26px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
+.head .ttl{font-size:20px;font-weight:700;margin:0 0 6px}
+.head .vt{font-size:12px;color:#555;line-height:1.7}
+.head .vt b{color:#222}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:12px;align-items:center}
+.legend .k{padding:1px 7px;border-radius:3px;border:1px solid #ddd}
+.k.kg{background:var(--green-bg);border-color:var(--green-bd)}
+.k.ky{background:var(--yellow-bg)}
+.k.ku{text-decoration:underline;text-decoration-color:var(--base-ul);text-decoration-thickness:2px}
+.k.kd{background:#fff6f6;border-color:#e8b3b3;color:#a55;font-size:11px}
+.k.ka{color:var(--muted);font-size:11px}
+.controls{margin-top:9px;font-size:12px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.controls label{cursor:pointer;user-select:none}
+.controls .stat{color:var(--muted)}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{position:sticky;top:0;background:#f7f7f9;border-bottom:2px solid #d8d8dc;padding:9px 14px;font-size:13.5px;font-weight:700;width:33.33%}
+thead th .sub{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+td{vertical-align:top;padding:7px 14px;border-bottom:1px solid #f0f0f0;font-size:15.5px;line-height:2;word-break:break-all}
+td.col-mid{background:#fcfcff;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+tr:hover td{background:#fcfcf2}
+tr.r-ins td{background:#fbfffb}
+.hl-replace{background:var(--yellow-bg);border-radius:2px}
+.hl-insert{background:var(--green-bg);border-radius:2px}
+u.base-diff{text-decoration:underline;text-decoration-color:var(--base-ul);text-decoration-thickness:2px;text-underline-offset:3px}
+.annot{color:var(--muted);font-size:12px;background:#f4f4f4;border-radius:3px;padding:0 3px;margin:0 1px}
+.col-del{background:#fff6f6}
+.gap{color:#c9a3a3;font-size:13px}
+body.hide-annot .annot{display:none}
+body.only-diff tr.r-same{display:none}
+</style></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <h2>回目导航（前80回）</h2>
+    <ul>__NAV__</ul>
+  </aside>
+  <section class="main">
+    <div class="head">
+      <h1 class="ttl" id="mainttl"></h1>
+      <div class="vt" id="vt"></div>
+      <div class="legend"><b>图例（按脂本句对齐，行内只标变动字词）：</b>
+        <span><span class="k ky">改字</span></span>
+        <span><span class="k kg">新增</span></span>
+        <span><span class="k ku">下划线</span>基准被改/删</span>
+        <span><span class="k kd">（X无）</span>整句缺失</span>
+        <span><span class="k ka">【批注】</span>脂批,不参与比对</span>
+      </div>
+      <div class="controls">
+        <label><input type="checkbox" id="tgAnnot" checked> 显示脂批</label>
+        <label><input type="checkbox" id="tgDiffOnly"> 仅显示有差异的行</label>
+        <span class="stat" id="stat"></span>
+      </div>
+    </div>
+    <div id="content"></div>
+  </section>
+</div>
+__TEMPLATES__
+<script>
+function loadCh(n){
+  var tpl=document.getElementById('tpl'+n); if(!tpl)return;
+  document.getElementById('content').innerHTML=tpl.innerHTML;
+  document.getElementById('mainttl').textContent='第'+n+'回　'+tpl.dataset.zt;
+  document.getElementById('vt').innerHTML='<b>程高本</b>：'+tpl.dataset.ct+' ｜ <b>脂本(基准)</b>：'+tpl.dataset.zt+' ｜ <b>癸酉本</b>：'+tpl.dataset.gt;
+  document.getElementById('stat').textContent=tpl.dataset.stat;
+  document.querySelectorAll('.sidebar li').forEach(function(li){li.classList.toggle('active',li.dataset.ch==n);});
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.sidebar li').forEach(function(li){
+  li.addEventListener('click',function(){loadCh(li.dataset.ch);});
+});
+document.getElementById('tgAnnot').addEventListener('change',function(e){document.body.classList.toggle('hide-annot',!e.target.checked);});
+document.getElementById('tgDiffOnly').addEventListener('change',function(e){document.body.classList.toggle('only-diff',e.target.checked);});
+loadCh(1);
+</script>
+</body></html>
