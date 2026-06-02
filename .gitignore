@@ -4,9 +4,7 @@ __pycache__/
 .venv/
 venv/
 env/
-# data/ 随仓库提交（脂本/程高/癸酉的原始与处理后文本），部署时无需现取外部源
-# 仅排除癸酉 docx 在 data 里的副本（原件已在仓库根目录，避免重复）
-data/raw/guiyou.docx
+# data/ 随仓库提交（脂本/程高的原始与处理后文本 + 癸酉 docx），部署时无需现取外部源
 dist/
 .DS_Store
 .idea/

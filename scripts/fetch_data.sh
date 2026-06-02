@@ -21,17 +21,15 @@ for f in $(ls /tmp/cgb/ch_cgb/*.md | sort); do
     printf '\n' >> data/raw/chenggao.md
 done
 echo "cgb 合并字节: $(wc -c < data/raw/chenggao.md)"
-echo "=== 3) 癸酉本：取仓库根目录的 docx ==="
-# 癸酉本 docx（吴氏石头记 108 回 2020 版）直接随仓库提交，放在仓库根目录。
-# 服务器 git clone 后即在根目录，无需再下载。也可用 GUIYOU_DOCX_URL 覆盖。
-GUIYOU_SRC="$ROOT/108回癸酉本石头记（2020版）.docx"
-if [ -n "${GUIYOU_DOCX_URL:-}" ]; then
-    curl -fsSL "$GUIYOU_DOCX_URL" -o data/raw/guiyou.docx
-elif [ -f "$GUIYOU_SRC" ]; then
-    cp "$GUIYOU_SRC" data/raw/guiyou.docx
-else
-    echo "找不到癸酉 docx：既无 GUIYOU_DOCX_URL，根目录也无 $GUIYOU_SRC" >&2
-    exit 1
+echo "=== 3) 癸酉本：已随仓库提交在 data/raw/guiyou.docx ==="
+# 癸酉本 docx（吴氏石头记 108 回 2020 版）随仓库提交，clone 后即在 data/raw/guiyou.docx。
+# 若不存在，可用 GUIYOU_DOCX_URL 直链下载补齐。
+if [ ! -f data/raw/guiyou.docx ]; then
+    if [ -n "${GUIYOU_DOCX_URL:-}" ]; then
+        curl -fsSL "$GUIYOU_DOCX_URL" -o data/raw/guiyou.docx
+    else
+        echo "缺 data/raw/guiyou.docx，且未设置 GUIYOU_DOCX_URL" >&2; exit 1
+    fi
 fi
 echo "guiyou.docx 字节: $(wc -c < data/raw/guiyou.docx)  (期望 ~2.3MB)"
 echo "=== 全部数据就位 ==="
