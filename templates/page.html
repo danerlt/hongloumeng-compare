@@ -1,74 +1,128 @@
 <!doctype html>
 <html lang="zh-Hans"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>《红楼梦》三版本字符级对比 · 前八十回</title>
+<title>红楼梦 · 三版本字符校读 · 前八十回</title>
 <style>
-:root{--red-bg:#ffd6d6;--green-bg:#d3f3d6;--green-bd:#8c8;--yellow-bg:#fff2b8;--base-ul:#c33;--ink:#1d1d1f;--muted:#8a8a8e;--line:#e4e4e7;}
+:root{
+  --paper:#f5f0e6;        /* 宣纸暖底 */
+  --paper-2:#fbf7ee;      /* 稍亮纸面 */
+  --ink:#23201b;          /* 墨色 */
+  --ink-soft:#574f44;     /* 次墨 */
+  --muted:#938979;        /* 暖灰 */
+  --cinnabar:#9e2b22;     /* 朱砂 */
+  --cinnabar-2:#b8473c;   /* 浅朱 */
+  --line:#e2d9c6;         /* 暖分隔线 */
+  --line-soft:#ece4d4;
+  --mid-bg:#fffdf6;       /* 中栏基准底 */
+  --hl-y:#f4ead0;         /* 改字·柔黄(藤黄) */
+  --hl-y-bd:#d8c389;
+  --hl-g:#dde6cf;         /* 新增·柔青(石绿) */
+  --hl-g-bd:#aebd92;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:"Noto Serif CJK SC","Source Han Serif SC","Songti SC",serif;color:var(--ink);background:#faf9f7}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;
+  font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC",STSong,"SimSun",serif;
+  color:var(--ink);background:var(--paper);
+  font-feature-settings:"halt";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:250px;flex:0 0 250px;border-right:1px solid var(--line);background:#fff;position:sticky;top:0;height:100vh;overflow:auto}
-.sidebar h2{font-size:13px;margin:0;padding:14px 14px 6px;color:var(--muted);font-weight:600;letter-spacing:.05em}
-.sidebar ul{list-style:none;margin:0;padding:0}
-.sidebar li{padding:8px 14px;border-bottom:1px solid #f4f4f4;cursor:pointer;font-size:12.5px;line-height:1.45}
-.sidebar li:hover{background:#f7f9ff}
-.sidebar li.active{background:#eef3ff;border-left:3px solid #3b5bdb}
-.sidebar .navnum{display:block;font-size:11px;color:var(--muted)}
-.main{flex:1;min-width:0;padding:0 0 60px}
-.head{padding:18px 26px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
-.head .ttl{font-size:20px;font-weight:700;margin:0 0 6px}
-.head .vt{font-size:12px;color:#555;line-height:1.7}
-.head .vt b{color:#222}
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:12px;align-items:center}
-.legend .k{padding:1px 7px;border-radius:3px;border:1px solid #ddd}
-.k.kg{background:var(--green-bg);border-color:var(--green-bd)}
-.k.ky{background:var(--yellow-bg)}
-.k.ku{text-decoration:underline;text-decoration-color:var(--base-ul);text-decoration-thickness:2px}
-.k.kd{background:#fff6f6;border-color:#e8b3b3;color:#a55;font-size:11px}
-.k.ka{color:var(--muted);font-size:11px}
-.controls{margin-top:9px;font-size:12px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.controls label{cursor:pointer;user-select:none}
-.controls .stat{color:var(--muted)}
+
+/* ===== 侧栏：书册目录 ===== */
+.sidebar{width:266px;flex:0 0 266px;background:var(--paper-2);
+  border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;align-items:center;gap:11px;padding:20px 18px 14px;border-bottom:1px solid var(--line)}
+.brand .seal{width:38px;height:38px;flex:0 0 38px;display:flex;align-items:center;justify-content:center;
+  background:var(--cinnabar);color:#fff;border-radius:4px;font-size:21px;font-weight:700;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.brand .brand-t{font-size:19px;font-weight:700;letter-spacing:.14em;line-height:1.2}
+.brand .brand-s{font-size:11px;color:var(--muted);letter-spacing:.18em;margin-top:3px}
+.sidebar h2{font-size:12px;margin:0;padding:14px 18px 8px;color:var(--muted);font-weight:600;letter-spacing:.16em}
+.sidebar ul{list-style:none;margin:0;padding:0 0 24px}
+.sidebar li{padding:9px 18px;border-bottom:1px solid var(--line-soft);cursor:pointer;
+  font-size:13px;line-height:1.5;color:var(--ink-soft);transition:background .12s}
+.sidebar li:hover{background:#f0e9da}
+.sidebar li.active{background:#efe6d2;color:var(--ink);box-shadow:inset 3px 0 0 var(--cinnabar)}
+.sidebar .navnum{display:block;font-size:11px;color:var(--cinnabar-2);letter-spacing:.08em;margin-bottom:1px}
+.sidebar li.active .navnum{color:var(--cinnabar)}
+
+/* ===== 主区 ===== */
+.main{flex:1;min-width:0;padding:0 0 64px}
+.head{padding:22px 30px 14px;border-bottom:1px solid var(--line);background:var(--paper-2);
+  position:sticky;top:0;z-index:5}
+.head .ttl{font-size:23px;font-weight:700;margin:0 0 9px;letter-spacing:.04em;color:var(--ink)}
+.head .ttl .hui{color:var(--cinnabar);font-size:16px;margin-right:10px;letter-spacing:.1em;
+  border:1px solid var(--cinnabar);border-radius:3px;padding:1px 7px;vertical-align:2px;font-weight:600}
+.vt{font-size:12.5px;color:var(--ink-soft);line-height:1.85;display:flex;flex-wrap:wrap;gap:4px 16px}
+.vt .vt-i{display:inline-flex;gap:6px}
+.vt .vt-k{color:var(--muted);font-size:11px;letter-spacing:.08em;white-space:nowrap}
+.vt b{font-weight:400}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:11px;font-size:12px;align-items:center;color:var(--ink-soft)}
+.legend>b{font-weight:600;color:var(--ink)}
+.legend .k{padding:1px 7px;border-radius:2px;border:1px solid var(--line)}
+.k.kg{background:var(--hl-g);border-color:var(--hl-g-bd)}
+.k.ky{background:var(--hl-y);border-color:var(--hl-y-bd)}
+.k.ku{text-decoration:underline;text-decoration-color:var(--cinnabar);text-decoration-thickness:2px;text-underline-offset:3px}
+.k.kd{background:#f6e9e4;border-color:#d9a99f;color:var(--cinnabar);font-size:11px}
+.k.ka{color:var(--muted);font-size:11px;background:#efe7d6;border:1px solid var(--line)}
+.controls{margin-top:12px;font-size:12.5px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.controls label{cursor:pointer;user-select:none;color:var(--ink-soft)}
+.controls input{accent-color:var(--cinnabar);vertical-align:-1px}
+.controls .stat{color:var(--muted);letter-spacing:.04em}
+
+/* ===== 三栏校读 ===== */
 table{width:100%;border-collapse:collapse;table-layout:fixed}
-thead th{position:sticky;top:0;background:#f7f7f9;border-bottom:2px solid #d8d8dc;padding:9px 14px;font-size:13.5px;font-weight:700;width:33.33%}
-thead th .sub{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
-td{vertical-align:top;padding:7px 14px;border-bottom:1px solid #f0f0f0;font-size:15.5px;line-height:2;word-break:break-all}
-td.col-mid{background:#fcfcff;border-left:1px solid var(--line);border-right:1px solid var(--line)}
-tr:hover td{background:#fcfcf2}
-tr.r-ins td{background:#fbfffb}
-.hl-replace{background:var(--yellow-bg);border-radius:2px}
-.hl-insert{background:var(--green-bg);border-radius:2px}
-u.base-diff{text-decoration:underline;text-decoration-color:var(--base-ul);text-decoration-thickness:2px;text-underline-offset:3px}
-.annot{color:var(--muted);font-size:12px;background:#f4f4f4;border-radius:3px;padding:0 3px;margin:0 1px}
-.col-del{background:#fff6f6}
-.gap{color:#c9a3a3;font-size:13px}
+thead th{position:sticky;top:0;background:#efe6d3;border-bottom:1.5px solid #d6c9ad;
+  padding:10px 16px;font-size:14px;font-weight:700;width:33.33%;color:var(--ink);letter-spacing:.06em}
+thead th .sub{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:3px;letter-spacing:.02em}
+td{vertical-align:top;padding:10px 16px;border-bottom:1px solid var(--line-soft);
+  font-size:16px;line-height:2.05;word-break:break-all}
+td.col-mid{background:var(--mid-bg);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+tr:hover td{background:#f7f1e3}
+tr:hover td.col-mid{background:#fdfaf0}
+.hl-replace{background:var(--hl-y);border-radius:2px;padding:0 1px;box-shadow:0 1px 0 var(--hl-y-bd)}
+.hl-insert{background:var(--hl-g);border-radius:2px;padding:0 1px;box-shadow:0 1px 0 var(--hl-g-bd)}
+u.base-diff{text-decoration:underline;text-decoration-color:var(--cinnabar);
+  text-decoration-thickness:2px;text-underline-offset:3px}
+.annot{color:var(--muted);font-size:12.5px;background:#efe7d5;border:1px solid var(--line);
+  border-radius:3px;padding:0 4px;margin:0 2px;letter-spacing:.02em}
+.col-del{background:#f9f0ea}
+.gap{color:#c39a90;font-size:13.5px;letter-spacing:.1em}
 body.hide-annot .annot{display:none}
 body.only-diff tr.r-same{display:none}
+
 /* 汉堡按钮 + 遮罩（仅窄屏显示） */
-.menu-btn{display:none;position:fixed;top:10px;left:10px;z-index:40;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:18px;line-height:1;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.1)}
-#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:30}
+.menu-btn{display:none;position:fixed;top:11px;left:11px;z-index:40;width:42px;height:42px;
+  align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper-2);
+  color:var(--ink);border-radius:8px;font-size:18px;line-height:1;cursor:pointer;
+  box-shadow:0 1px 5px rgba(60,40,20,.12)}
+#overlay{display:none;position:fixed;inset:0;background:rgba(35,25,15,.4);z-index:30}
 #overlay.show{display:block}
-/* ===== 窄屏 / 移动端（≤860px）：抽屉导航 + 三栏堆叠成卡片 ===== */
+
+/* ===== 窄屏/移动端（≤860px）：抽屉导航 + 三栏卡片 ===== */
 @media(max-width:860px){
   .menu-btn{display:inline-flex}
-  .sidebar{position:fixed;top:0;left:-88%;width:84%;max-width:330px;height:100vh;z-index:35;transition:left .25s ease;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+  .sidebar{position:fixed;top:0;left:-88%;width:84%;max-width:330px;height:100vh;z-index:35;
+    transition:left .25s ease;box-shadow:2px 0 16px rgba(50,35,15,.22)}
   .sidebar.open{left:0}
-  .sidebar li{font-size:14px;padding:11px 16px}
+  .sidebar li{font-size:14px;padding:12px 18px}
   .main{padding-bottom:40px}
-  .head{position:static;padding:14px 16px 12px 60px}
-  .head .ttl{font-size:17px}
-  .legend{gap:7px 12px;font-size:11px;margin-top:8px}
-  .controls{gap:14px;margin-top:10px}
+  .head{position:static;padding:16px 16px 13px 62px}
+  .head .ttl{font-size:18px}
+  .legend{gap:8px 12px;font-size:11px;margin-top:9px}
+  .controls{gap:14px;margin-top:11px}
   thead{display:none}
   table,tbody,tr,td{display:block;width:auto}
-  tr{margin:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-  tr:hover td,tr.r-ins td{background:transparent}
-  td{border:none;border-bottom:1px solid #eee;padding:9px 14px;font-size:16px;line-height:1.95;word-break:normal;overflow-wrap:anywhere}
+  tr{margin:11px;border:1px solid var(--line);border-radius:9px;overflow:hidden;
+    background:var(--paper-2);box-shadow:0 1px 3px rgba(60,40,20,.06)}
+  tr:hover td,tr:hover td.col-mid{background:transparent}
+  td{border:none;border-bottom:1px solid var(--line-soft);padding:10px 15px;
+    font-size:16.5px;line-height:2;word-break:normal;overflow-wrap:anywhere}
   td:last-child{border-bottom:none}
-  td.col-mid{background:#fcfcff;border-left:none;border-right:none}
-  td::before{display:block;font-size:10.5px;color:var(--muted);font-weight:700;margin-bottom:3px;letter-spacing:.05em}
+  td.col-mid{background:#fffdf6;border-left:none;border-right:none}
+  td::before{display:block;font-size:10.5px;color:var(--cinnabar-2);font-weight:700;
+    margin-bottom:4px;letter-spacing:.1em}
   td.col-cg::before{content:"程高本"}
-  td.col-mid::before{content:"脂本（基准）"}
+  td.col-mid::before{content:"脂本 · 基准"}
   td.col-gy::before{content:"癸酉本"}
 }
 </style></head>
@@ -77,19 +131,23 @@ body.only-diff tr.r-same{display:none}
 <div id="overlay"></div>
 <div class="layout">
   <aside class="sidebar">
-    <h2>回目导航（前80回）</h2>
+    <div class="brand">
+      <span class="seal">红</span>
+      <div><div class="brand-t">红楼梦</div><div class="brand-s">三版本字符校读</div></div>
+    </div>
+    <h2>目录 · 前八十回</h2>
     <ul>__NAV__</ul>
   </aside>
   <section class="main">
     <div class="head">
       <h1 class="ttl" id="mainttl"></h1>
       <div class="vt" id="vt"></div>
-      <div class="legend"><b>图例（按脂本句对齐，行内只标变动字词）：</b>
+      <div class="legend"><b>校读图例：</b>
         <span><span class="k ky">改字</span></span>
         <span><span class="k kg">新增</span></span>
         <span><span class="k ku">下划线</span>基准被改/删</span>
         <span><span class="k kd">（X无）</span>整句缺失</span>
-        <span><span class="k ka">【批注】</span>脂批,不参与比对</span>
+        <span><span class="k ka">【批注】</span>脂批 · 不参与比对</span>
       </div>
       <div class="controls">
         <label><input type="checkbox" id="tgAnnot" checked> 显示脂批</label>
@@ -105,8 +163,11 @@ __TEMPLATES__
 function loadCh(n){
   var tpl=document.getElementById('tpl'+n); if(!tpl)return;
   document.getElementById('content').innerHTML=tpl.innerHTML;
-  document.getElementById('mainttl').textContent='第'+n+'回　'+tpl.dataset.zt;
-  document.getElementById('vt').innerHTML='<b>程高本</b>：'+tpl.dataset.ct+' ｜ <b>脂本(基准)</b>：'+tpl.dataset.zt+' ｜ <b>癸酉本</b>：'+tpl.dataset.gt;
+  document.getElementById('mainttl').innerHTML='<span class="hui">第'+n+'回</span>'+tpl.dataset.zt;
+  document.getElementById('vt').innerHTML=
+    '<span class="vt-i"><span class="vt-k">程高</span><b>'+tpl.dataset.ct+'</b></span>'+
+    '<span class="vt-i"><span class="vt-k">脂本·基准</span><b>'+tpl.dataset.zt+'</b></span>'+
+    '<span class="vt-i"><span class="vt-k">癸酉</span><b>'+tpl.dataset.gt+'</b></span>';
   document.getElementById('stat').textContent=tpl.dataset.stat;
   document.querySelectorAll('.sidebar li').forEach(function(li){li.classList.toggle('active',li.dataset.ch==n);});
   window.scrollTo(0,0);
