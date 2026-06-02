@@ -44,8 +44,37 @@ u.base-diff{text-decoration:underline;text-decoration-color:var(--base-ul);text-
 .gap{color:#c9a3a3;font-size:13px}
 body.hide-annot .annot{display:none}
 body.only-diff tr.r-same{display:none}
+/* 汉堡按钮 + 遮罩（仅窄屏显示） */
+.menu-btn{display:none;position:fixed;top:10px;left:10px;z-index:40;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:18px;line-height:1;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.1)}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:30}
+#overlay.show{display:block}
+/* ===== 窄屏 / 移动端（≤860px）：抽屉导航 + 三栏堆叠成卡片 ===== */
+@media(max-width:860px){
+  .menu-btn{display:inline-flex}
+  .sidebar{position:fixed;top:0;left:-88%;width:84%;max-width:330px;height:100vh;z-index:35;transition:left .25s ease;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+  .sidebar.open{left:0}
+  .sidebar li{font-size:14px;padding:11px 16px}
+  .main{padding-bottom:40px}
+  .head{position:static;padding:14px 16px 12px 60px}
+  .head .ttl{font-size:17px}
+  .legend{gap:7px 12px;font-size:11px;margin-top:8px}
+  .controls{gap:14px;margin-top:10px}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:auto}
+  tr{margin:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  tr:hover td,tr.r-ins td{background:transparent}
+  td{border:none;border-bottom:1px solid #eee;padding:9px 14px;font-size:16px;line-height:1.95;word-break:normal;overflow-wrap:anywhere}
+  td:last-child{border-bottom:none}
+  td.col-mid{background:#fcfcff;border-left:none;border-right:none}
+  td::before{display:block;font-size:10.5px;color:var(--muted);font-weight:700;margin-bottom:3px;letter-spacing:.05em}
+  td.col-cg::before{content:"程高本"}
+  td.col-mid::before{content:"脂本（基准）"}
+  td.col-gy::before{content:"癸酉本"}
+}
 </style></head>
 <body>
+<button id="menuBtn" class="menu-btn" aria-label="打开目录" aria-expanded="false">☰</button>
+<div id="overlay"></div>
 <div class="layout">
   <aside class="sidebar">
     <h2>回目导航（前80回）</h2>
@@ -82,8 +111,12 @@ function loadCh(n){
   document.querySelectorAll('.sidebar li').forEach(function(li){li.classList.toggle('active',li.dataset.ch==n);});
   window.scrollTo(0,0);
 }
+var _sb=document.querySelector('.sidebar'),_ov=document.getElementById('overlay'),_mb=document.getElementById('menuBtn');
+function setNav(open){_sb.classList.toggle('open',open);_ov.classList.toggle('show',open);_mb.setAttribute('aria-expanded',open?'true':'false');}
+_mb.addEventListener('click',function(){setNav(!_sb.classList.contains('open'));});
+_ov.addEventListener('click',function(){setNav(false);});
 document.querySelectorAll('.sidebar li').forEach(function(li){
-  li.addEventListener('click',function(){loadCh(li.dataset.ch);});
+  li.addEventListener('click',function(){loadCh(li.dataset.ch);setNav(false);});
 });
 document.getElementById('tgAnnot').addEventListener('change',function(e){document.body.classList.toggle('hide-annot',!e.target.checked);});
 document.getElementById('tgDiffOnly').addEventListener('change',function(e){document.body.classList.toggle('only-diff',e.target.checked);});
