@@ -6,8 +6,10 @@ import cmp_lib as C
 import cmp_sent as S
 def _anchor(opcodes, side_n):
     """对每个 side text 原子，标出它对应脂本(base)的哪个 text 序号。
-    equal 精确；replace/insert 归到 base 块起点 i1；delete 无侧栏字。"""
+    equal 精确；replace/insert 归到 base 块起点 i1；delete 无侧栏字。
+    另返回 is_ins：该侧栏字是否来自 insert（用于句末补字回拉到前句）。"""
     anc = [None]*side_n
+    is_ins = [False]*side_n
     for tag, i1, i2, j1, j2 in opcodes:
         if tag == 'equal':
             for off in range(j2-j1):
@@ -15,7 +17,9 @@ def _anchor(opcodes, side_n):
         elif tag in ('replace', 'insert'):
             for j in range(j1, j2):
                 anc[j] = i1
-    return anc
+                if tag == 'insert':
+                    is_ins[j] = True
+    return anc, is_ins
 def _side_range_for(anc, lo, hi, side_n):
     """锚点落在 [lo, hi) 的侧栏 text 序号区间。"""
     js = [j for j in range(side_n) if anc[j] is not None and lo <= anc[j] < hi]
@@ -102,9 +106,21 @@ def render_chapter(zhi, cg, gy):
     bk, bidx = C.text_seq(za); ck, cidx = C.text_seq(ca); gk, gidx = C.text_seq(ga)
     cpos = {al: t for t, al in enumerate(cidx)}
     gpos = {al: t for t, al in enumerate(gidx)}
-    cg_anchor = _anchor(C.diff_base_side(bk, ck), len(ck))
-    gy_anchor = _anchor(C.diff_base_side(bk, gk), len(gk))
+    cg_anchor, cg_ins = _anchor(C.diff_base_side(bk, ck), len(ck))
+    gy_anchor, gy_ins = _anchor(C.diff_base_side(bk, gk), len(gk))
     zs = S.split_sentences(za)
+    # 预算每句 text 起点；把"落在句首边界上的插入字"（如脂本「过日」→程高「过日子」的"子"）
+    # 回拉到前一句，避免句末补字被甩到下一行。
+    _spans = []; _t0 = 0
+    for sent in zs:
+        _nt = sum(1 for a in sent if a['t'] == 'text')
+        _spans.append(_t0); _t0 += _nt
+    _starts = set(_spans[1:])  # 各非首句的 text 起点
+    def _pull_back(anchor, is_ins):
+        for j in range(len(anchor)):
+            if is_ins[j] and anchor[j] in _starts and anchor[j] > 0:
+                anchor[j] -= 1
+    _pull_back(cg_anchor, cg_ins); _pull_back(gy_anchor, gy_ins)
     rows_html = []
     n_same = n_diff = n_cgmiss = n_gymiss = 0
     t = 0
