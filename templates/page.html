@@ -14,10 +14,10 @@
   --line:#e2d9c6;         /* 暖分隔线 */
   --line-soft:#ece4d4;
   --mid-bg:#fffdf6;       /* 中栏基准底 */
-  --hl-y:#f4ead0;         /* 改字·柔黄(藤黄) */
-  --hl-y-bd:#d8c389;
-  --hl-g:#dde6cf;         /* 新增·柔青(石绿) */
-  --hl-g-bd:#aebd92;
+  --hl-y:#f6d873;         /* 改字·藤黄(重彩) */
+  --hl-y-bd:#c79f33;
+  --hl-g:#bbd897;         /* 新增·石绿(重彩) */
+  --hl-g-bd:#82a85e;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -79,14 +79,19 @@ td{vertical-align:top;padding:10px 16px;border-bottom:1px solid var(--line-soft)
 td.col-mid{background:var(--mid-bg);border-left:1px solid var(--line);border-right:1px solid var(--line)}
 tr:hover td{background:#f7f1e3}
 tr:hover td.col-mid{background:#fdfaf0}
-.hl-replace{background:var(--hl-y);border-radius:2px;padding:0 1px;box-shadow:0 1px 0 var(--hl-y-bd)}
-.hl-insert{background:var(--hl-g);border-radius:2px;padding:0 1px;box-shadow:0 1px 0 var(--hl-g-bd)}
-u.base-diff{text-decoration:underline;text-decoration-color:var(--cinnabar);
-  text-decoration-thickness:2px;text-underline-offset:3px}
+/* 有差异的行：左缘朱砂标记条，便于一眼定位 */
+tr.r-diff>td:first-child{box-shadow:inset 4px 0 0 var(--cinnabar)}
+.hl-replace{background:var(--hl-y);border-radius:2px;padding:0 2px;font-weight:600;
+  box-shadow:inset 0 -2px 0 var(--hl-y-bd)}
+.hl-insert{background:var(--hl-g);border-radius:2px;padding:0 2px;font-weight:600;
+  box-shadow:inset 0 -2px 0 var(--hl-g-bd)}
+/* 基准被改/删的字：朱砂红 + 加粗下划线（朱批感，最醒目） */
+u.base-diff{color:var(--cinnabar);font-weight:600;text-decoration:underline;
+  text-decoration-color:var(--cinnabar);text-decoration-thickness:2.5px;text-underline-offset:3px}
 .annot{color:var(--muted);font-size:12.5px;background:#efe7d5;border:1px solid var(--line);
   border-radius:3px;padding:0 4px;margin:0 2px;letter-spacing:.02em}
-.col-del{background:#f9f0ea}
-.gap{color:#c39a90;font-size:13.5px;letter-spacing:.1em}
+.col-del{background:#f6e7df}
+.gap{color:var(--cinnabar-2);font-weight:600;font-size:13.5px;letter-spacing:.1em}
 body.hide-annot .annot{display:none}
 body.only-diff tr.r-same{display:none}
 
@@ -114,6 +119,8 @@ body.only-diff tr.r-same{display:none}
   table,tbody,tr,td{display:block;width:auto}
   tr{margin:11px;border:1px solid var(--line);border-radius:9px;overflow:hidden;
     background:var(--paper-2);box-shadow:0 1px 3px rgba(60,40,20,.06)}
+  tr.r-diff{border-left:4px solid var(--cinnabar)}
+  tr.r-diff>td:first-child{box-shadow:none}
   tr:hover td,tr:hover td.col-mid{background:transparent}
   td{border:none;border-bottom:1px solid var(--line-soft);padding:10px 15px;
     font-size:16.5px;line-height:2;word-break:normal;overflow-wrap:anywhere}
