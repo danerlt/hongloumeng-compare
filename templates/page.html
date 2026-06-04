@@ -94,6 +94,29 @@ u.base-diff{color:var(--cinnabar);font-weight:600;text-decoration:underline;
 .gap{color:var(--cinnabar-2);font-weight:600;font-size:13.5px;letter-spacing:.1em}
 body.hide-annot .annot{display:none}
 body.only-diff tr.r-same{display:none}
+/* 全局搜索 */
+.search-bar{display:flex;gap:8px;margin-bottom:12px}
+.search-bar input{flex:1;max-width:440px;padding:8px 12px;border:1px solid var(--line);
+  border-radius:7px;font-size:13.5px;font-family:inherit;background:#fff;color:var(--ink)}
+.search-bar input:focus{outline:none;border-color:var(--cinnabar-2);box-shadow:0 0 0 2px rgba(158,43,34,.12)}
+.search-bar button{padding:8px 15px;border:1px solid var(--line);background:var(--paper);
+  border-radius:7px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink)}
+.search-bar button:hover{background:#efe6d2}
+.search-bar .qclr{color:var(--muted)}
+#searchPanel{display:none;padding:6px 30px 48px}
+#searchPanel.show{display:block}
+.sr-head{font-size:13px;color:var(--ink-soft);padding:12px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.sr-head b{color:var(--cinnabar)}
+.sr-item{padding:11px 12px;border-bottom:1px solid var(--line-soft);cursor:pointer;border-radius:7px;transition:background .12s}
+.sr-item:hover{background:#f2ecdd}
+.sr-ch{font-size:12px;color:var(--cinnabar);margin-right:12px;font-weight:600;white-space:nowrap}
+.sr-tx{font-size:15.5px;color:var(--ink);line-height:1.85}
+.sr-tx mark{background:var(--hl-y);color:inherit;padding:0 1px;border-radius:2px;font-weight:600;box-shadow:inset 0 -2px 0 var(--hl-y-bd)}
+.sr-empty{padding:24px 4px;color:var(--muted);font-size:14px}
+tr.hit td{animation:hitfade 2.2s ease}
+@keyframes hitfade{0%,35%{background:#fbe7c0}100%{background:transparent}}
+tr.hit td.col-mid{animation:hitfademid 2.2s ease}
+@keyframes hitfademid{0%,35%{background:#fbe7c0}100%{background:var(--mid-bg)}}
 
 /* 汉堡按钮 + 遮罩（仅窄屏显示） */
 .menu-btn{display:none;position:fixed;top:11px;left:11px;z-index:40;width:42px;height:42px;
@@ -113,6 +136,8 @@ body.only-diff tr.r-same{display:none}
   .main{padding-bottom:40px}
   .head{position:static;padding:16px 16px 13px 62px}
   .head .ttl{font-size:18px}
+  .search-bar input{max-width:none}
+  #searchPanel{padding:6px 14px 40px}
   .legend{gap:8px 12px;font-size:11px;margin-top:9px}
   .controls{gap:14px;margin-top:11px}
   thead{display:none}
@@ -147,6 +172,11 @@ body.only-diff tr.r-same{display:none}
   </aside>
   <section class="main">
     <div class="head">
+      <div class="search-bar">
+        <input id="q" type="search" placeholder="全局搜索 80 回（如：手倦抛书 / 刘姥姥），回车检索">
+        <button id="qbtn">搜索</button>
+        <button id="qclr" class="qclr" style="display:none">清空 ×</button>
+      </div>
       <h1 class="ttl" id="mainttl"></h1>
       <div class="vt" id="vt"></div>
       <div class="legend"><b>校读图例：</b>
@@ -162,6 +192,7 @@ body.only-diff tr.r-same{display:none}
         <span class="stat" id="stat"></span>
       </div>
     </div>
+    <div id="searchPanel"></div>
     <div id="content"></div>
   </section>
 </div>
@@ -188,6 +219,56 @@ document.querySelectorAll('.sidebar li').forEach(function(li){
 });
 document.getElementById('tgAnnot').addEventListener('change',function(e){document.body.classList.toggle('hide-annot',!e.target.checked);});
 document.getElementById('tgDiffOnly').addEventListener('change',function(e){document.body.classList.toggle('only-diff',e.target.checked);});
+
+/* ===== 全局搜索（首次检索时就地建索引，零额外下载） ===== */
+var Q=document.getElementById('q'),PANEL=document.getElementById('searchPanel'),
+    CONTENT=document.getElementById('content'),QCLR=document.getElementById('qclr'),SIDX=null;
+function buildIndex(){
+  SIDX=[];
+  for(var n=1;n<=80;n++){
+    var tpl=document.getElementById('tpl'+n); if(!tpl)continue;
+    var d=document.createElement('div'); d.innerHTML=tpl.innerHTML;
+    var trs=d.querySelectorAll('tbody tr');
+    for(var i=0;i<trs.length;i++){
+      var tds=trs[i].getElementsByTagName('td');
+      SIDX.push({n:n,i:i,a:trs[i].textContent,m:tds[1]?tds[1].textContent:trs[i].textContent});
+    }
+  }
+}
+function esc(s){return s.replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function frag(text,q){
+  var p=text.indexOf(q); if(p<0)p=0;
+  var s=Math.max(0,p-14),e=Math.min(text.length,p+q.length+30);
+  return (s>0?'…':'')+esc(text.slice(s,p))+'<mark>'+esc(text.slice(p,p+q.length))+'</mark>'+
+         esc(text.slice(p+q.length,e))+(e<text.length?'…':'');
+}
+function doSearch(){
+  var q=Q.value.trim(); if(!q){closeSearch();return;}
+  if(!SIDX)buildIndex();
+  var res=[],cap=400;
+  for(var k=0;k<SIDX.length;k++){if(SIDX[k].a.indexOf(q)>=0){res.push(SIDX[k]);if(res.length>=cap)break;}}
+  var h='<div class="sr-head">「<b>'+esc(q)+'</b>」找到 '+res.length+' 处'+(res.length>=cap?'（仅显示前 '+cap+'）':'')+' · 点击跳转并定位</div>';
+  if(!res.length){h+='<div class="sr-empty">没有匹配的句子。可换个更短的词试试。</div>';}
+  for(var k=0;k<res.length;k++){var r=res[k];
+    h+='<div class="sr-item" data-n="'+r.n+'" data-i="'+r.i+'"><span class="sr-ch">第'+r.n+'回</span>'+
+       '<span class="sr-tx">'+frag(r.m.indexOf(q)>=0?r.m:r.a,q)+'</span></div>';}
+  PANEL.innerHTML=h; PANEL.classList.add('show'); CONTENT.style.display='none'; QCLR.style.display='';
+  window.scrollTo(0,0);
+}
+function closeSearch(){PANEL.classList.remove('show'); CONTENT.style.display='';}
+PANEL.addEventListener('click',function(e){
+  var it=e.target.closest?e.target.closest('.sr-item'):null; if(!it)return;
+  var n=+it.dataset.n,i=+it.dataset.i;
+  closeSearch();
+  loadCh(n);
+  var trs=CONTENT.querySelectorAll('tbody tr');
+  if(trs[i]){trs[i].scrollIntoView({block:'center'});
+    trs[i].classList.add('hit'); setTimeout((function(t){return function(){t.classList.remove('hit');};})(trs[i]),2200);}
+});
+document.getElementById('qbtn').addEventListener('click',doSearch);
+QCLR.addEventListener('click',function(){Q.value='';closeSearch();this.style.display='none';Q.focus();});
+Q.addEventListener('keydown',function(e){if(e.key==='Enter')doSearch();});
+
 loadCh(1);
 </script>
 </body></html>
