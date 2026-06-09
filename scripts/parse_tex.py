@@ -75,6 +75,10 @@ def parse(s):
                 if s[j] == '{': depth += 1
                 elif s[j] == '}': depth -= 1
                 j += 1
+            if depth > 0:
+                # 找不到配对的闭括号：这是多余的脂批前缀括号（如 {{ / {{{），
+                # 当普通字符跳过，避免把后续整段正文吞进一个"批注组"（典型如第16回）。
+                i += 1; continue
             grp = s[i+1:j-1]; i = j
             if 'kaishu' in grp:
                 if '开卷第一回也' in grp:
